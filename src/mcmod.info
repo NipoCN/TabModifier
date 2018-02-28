@@ -1,0 +1,20 @@
+[
+    {
+        "modid": "tabmodifier",
+        "name": "Tab Modifier",
+        "version": "1.2.0-SNAPSHOT",
+        "dependencies": [
+            "spongeapi@7.1.0-SNAPSHOT",
+			"luckperms"
+        ],
+        "requiredMods": [
+            "spongeapi@7.1.0-SNAPSHOT"
+        ]
+    },
+    {
+        "modid": "tabmodifier",
+        "name": "Tab Modifier",
+        "version": "1.2.0-SNAPSHOT",
+        "description": "A Simple Tab Manager Plugin based on Luckperms"
+    }
+]

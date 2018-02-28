@@ -59,6 +59,13 @@ public class Config {
 		get().getNode("Default", "prefix").setValue("&a[default]");
 		get().getNode("Default", "suffix").setValue("&9[default]");
 		get().getNode("Default").setComment("set prefix and suffix when user/group's unique prefix/suffix is missing/unset");
+		get().getNode("Feature").setComment("disable some features");
+		get().getNode("Feature", "disableprefix").setValue("false");
+		get().getNode("Feature", "disablesuffix").setValue("false");
+		get().getNode("header").setValue("This is Header");
+		get().getNode("header").setComment("set header of tablist");
+		get().getNode("footer").setValue("This is Footer");
+		get().getNode("footer").setComment("set footer of tablist");
 	}
 	
 	public void save(){
@@ -76,5 +83,21 @@ public class Config {
 	
 	public String getsuffix(){
 		return get().getNode("Default", "suffix").getString();
+	}
+	
+	public boolean getdisableprefix(){
+		return get().getNode("Feature", "disableprefix").getBoolean();
+	}
+	
+	public boolean getdisablesuffix(){
+		return get().getNode("Feature", "disablesuffix").getBoolean();
+	}
+	
+	public String getheader(){
+		return get().getNode("header").getString();
+	}
+	
+	public String getfooter(){
+		return get().getNode("footer").getString();
 	}
 }

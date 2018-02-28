@@ -16,7 +16,7 @@ public class CommandMain implements CommandExecutor{
 		}
 		Sender.sendMessage(Text.of(TextColors.GOLD, "Plugin Info："));
 		Sender.sendMessage(Text.of(TextColors.GOLD, "Name：TabModifier"));
-		Sender.sendMessage(Text.of(TextColors.GOLD, "Version：v1.0.0"));
+		Sender.sendMessage(Text.of(TextColors.GOLD, "Version：v1.2.0"));
 		Sender.sendMessage(Text.of(TextColors.GOLD, "Author：NipoCN"));
 		return CommandResult.success();
 	}

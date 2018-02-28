@@ -1,9 +1,10 @@
 package xin.omen.tabmodifier;
 
 import xin.omen.tabmodifier.commands.*;
+import xin.omen.tabmodifier.utils.Utilities;
 
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.service.ProviderRegistration;
 import org.spongepowered.api.config.ConfigDir;
 import java.nio.file.Path;
 import java.nio.file.Files;
@@ -13,23 +14,15 @@ import com.google.inject.Inject;
 import org.spongepowered.api.Game;
 import org.slf4j.Logger;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.command.spec.*;
 import org.spongepowered.api.text.*;
-import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import me.lucko.luckperms.api.Contexts;
-import me.lucko.luckperms.api.Group;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.User;
-import me.lucko.luckperms.api.caching.GroupData;
-import me.lucko.luckperms.api.caching.MetaData;
-import me.lucko.luckperms.api.caching.UserData;
-import java.util.Optional;
 
-@Plugin(id="tabmodifier", name="Tab Modifier", version="1.0.0-SNAPSHOT", authors="NipoCN")
+@Plugin(id="tabmodifier", name="Tab Modifier", version="1.2.0-SNAPSHOT", authors="NipoCN", dependencies = {@Dependency(id = "luckperms", optional = false)})
 public class TabModifier {
 	
 	@Inject
@@ -66,10 +59,10 @@ public class TabModifier {
 				.description(Text.of("show version and author of plugin"))
 				.executor(new CommandMain())
 				.child(CommandSpec.builder()
-					.description(Text.of("reload plugin"))
-					.executor(new CommandReload())
-					.build(), "reload"
-				)
+						.description(Text.of("reload plugin"))
+						.executor(new CommandReload())
+						.build(), "reload"
+						)
 				.build();
 		game.getCommandManager().register(this, MainCommand, "tabmodifier", "tab");
 		logger.info("---------------------------------------------------------");
@@ -78,12 +71,12 @@ public class TabModifier {
 	}
 	
 	@Listener
-	public void onPlayerJoin(ClientConnectionEvent.Join event){
+	public void onPlayerJoin(ClientConnectionEvent.Join event, @Root Player player){
 		this.refresh();
 	}
 	
 	@Listener
-	public void onPlayerJoin(ClientConnectionEvent.Disconnect event){
+	public void onPlayerQuit(ClientConnectionEvent.Disconnect event, @Root Player player){
 		this.refresh();
 	}
 	
@@ -92,37 +85,7 @@ public class TabModifier {
 	}
 	
 	public void refresh(){
-		Optional<ProviderRegistration<LuckPermsApi>> provider = Sponge.getServiceManager().getRegistration(LuckPermsApi.class);
-		for (Player player : Sponge.getServer().getOnlinePlayers()){
-			if (provider.isPresent()){
-				LuckPermsApi api = provider.get().getProvider();
-				User user = api.getUser(player.getUniqueId());
-				Optional<Contexts> context = api.getContextForUser(user);
-				UserData userdata = user.getCachedData();
-				MetaData metadata = userdata.getMetaData(context.get());
-				String prefix = metadata.getPrefix();
-				String suffix = metadata.getSuffix();
-				if (prefix == null){
-					Contexts contexts = Contexts.global();
-					Group group = api.getGroup(user.getPrimaryGroup());
-					GroupData groupdata = group.getCachedData();
-					MetaData groupmeta = groupdata.getMetaData(contexts);
-					prefix = groupmeta.getPrefix();
-				}
-				if (suffix == null){
-					Contexts contexts = Contexts.global();
-					Group group = api.getGroup(user.getPrimaryGroup());
-					GroupData groupdata = group.getCachedData();
-					MetaData groupmeta = groupdata.getMetaData(contexts);
-					prefix = groupmeta.getSuffix();
-				}
-				if (prefix == null) prefix = Config.getInstance().getprefix();
-				if (suffix == null) suffix = Config.getInstance().getsuffix();
-				String combinedtext = prefix+player.getName()+suffix;
-				Text update = TextSerializers.FORMATTING_CODE.deserialize(combinedtext);
-				player.getTabList().getEntry(player.getUniqueId()).get().setDisplayName(update);
-			}
-			else continue;
-		}
+		//create task
+		Sponge.getScheduler().createTaskBuilder().execute(() -> {Utilities.getInstance().updateAllPlayers();}).delayTicks(20).submit(TabModifier.getInstance());
 	}
 }
