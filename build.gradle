@@ -1,0 +1,84 @@
+plugins {
+    id 'java'
+    id 'org.spongepowered.gradle.plugin' version '2.0.2'
+}
+
+group = 'me.nipo.tabmodifier'
+version = '2.0.1'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Sponge'
+        url = 'https://repo.spongepowered.org/repository/maven-public'
+    }
+    maven {
+        name = 'JitPack'
+        url = 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    compileOnly 'org.spongepowered:spongeapi:7.4.0'
+    compileOnly 'net.luckperms:api:5.4'
+    compileOnly 'com.github.rojo8399:placeholderapi:4.4'
+}
+
+sponge {
+    apiVersion('7.4.0-SNAPSHOT')
+
+    loader {
+        name('java_plain')
+        version('1.0')
+    }
+
+    plugin('tabmodifier') {
+        displayName('Tab Modifier')
+        version(project.version)
+        entrypoint('me.nipo.tabmodifier.TabModifier')
+        description('A Simple Tab Manager Plugin based on Luckperms')
+
+        license("MIT")
+        contributor('Nipo') {
+            description('Author')
+        }
+        contributor('dtkdtk0') {
+            description('Contributor/Maintainer')
+        }
+
+        dependency('spongeapi') {
+            optional(false)
+            loadOrder('after')
+            version('7.4.0')
+        }
+
+        dependency('luckperms') {
+            optional(false)
+            loadOrder('after')
+            version('5.4')
+        }
+
+        dependency('placeholderapi') {
+            optional(false)
+            loadOrder('before')
+            version('4.4')
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from('src/main/resources') {
+        include 'mcmod.info'
+    }
+}
